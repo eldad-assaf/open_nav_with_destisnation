@@ -80,7 +80,6 @@ class _HomeState extends State<Home> {
                           url = getWazeUrl('address');
                           break;
                         case 1:
-                          // Check if Apple Maps or Google Maps is installed
                           if (await isAppInstalled("comgooglemaps://")) {
                             url = getGoogleMapsUrl('address');
                           } else {
