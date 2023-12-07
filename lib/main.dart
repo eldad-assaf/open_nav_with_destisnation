@@ -3,21 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-// final Uri _appleMapsUrl =
-//     Uri.parse('https://maps.apple.com/?ll=32.180911,34.917870');
-
-// final Uri _wazeUrl =
-//     Uri.parse('https://waze.com/ul?ll=32.180911,34.917870&z=10');
-
-// //'https://waze.com/ul?ll=32.180911,34.917870&z=10'
-// String getWazeUrl(String address) => "waze://?q=$address&navigate=yes";
-
-// String getAppleMapsUrl(String address) =>
-//     "https://maps.apple.com/?daddr=$address";
-
-// String getGoogleMapsUrl(String address) =>
-//     "https://www.google.com/maps/dir/?api=1&destination=$address";
-
 void main() {
   runApp(const MyApp());
 }
@@ -42,13 +27,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  Future<bool> isAppInstalled(String scheme) async {
-    if (await canLaunchUrl(Uri.parse(scheme))) {
-      return true;
-    }
-    return false;
-  }
-
   Future<void> _launchUrl({required String app}) async {
     Uri selectedAppUrl = Uri();
     switch (app) {
@@ -84,7 +62,7 @@ class _HomeState extends State<Home> {
                 //NOT WORKING WITH WAZE!
                 //  final canLaunch = await canLaunchUrl(Uri.parse('waze://'));
                 //  print('canLaunch waze : $canLaunch ');
-                
+
                 await _launchUrl(app: 'waze');
               } catch (e) {
                 print('error : $e');
