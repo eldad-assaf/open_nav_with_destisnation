@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+final Uri _wazeUrl =
+    Uri.parse('https://waze.com/ul?ll=32.180911,34.917870&z=10');
+
+//'https://waze.com/ul?ll=32.180911,34.917870&z=10'
 String getWazeUrl(String address) => "waze://?q=$address&navigate=yes";
 
 String getAppleMapsUrl(String address) =>
@@ -33,8 +37,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  int selectedApp = 0; // Initialize with default value (0 for Waze)
-
   Future<bool> isAppInstalled(String scheme) async {
     if (await canLaunch(scheme)) {
       return true;
@@ -42,67 +44,53 @@ class _HomeState extends State<Home> {
     return false;
   }
 
+  Future<void> _launchUrl({required String app}) async {
+    Uri selectedAppUrl = Uri();
+    switch (app) {
+      case 'waze':
+        selectedAppUrl =
+            Uri.parse('https://waze.com/ul?ll=32.180911,34.917870&z=10');
+        break;
+      case 'googleMaps':
+        selectedAppUrl = Uri.parse(
+            'https://www.google.com/maps/dir/?api=1&destination=jerusalem');
+        break;
+      case 'appleMaps':
+        selectedAppUrl = Uri.parse('https://maps.apple.com/?daddr=jerusalem');
+        break;
+      default:
+        'googleMaps';
+    }
+
+    if (!await launchUrl(selectedAppUrl)) {
+      throw Exception('Could not launch $_wazeUrl');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(
-        child: TextButton(
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: const Text('Choose Navigation App'),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    RadioListTile(
-                      value: 0,
-                      groupValue: selectedApp,
-                      title: const Text('Waze'),
-                      onChanged: (value) =>
-                          setState(() => selectedApp = value as int),
-                    ),
-                    RadioListTile(
-                      value: 1,
-                      groupValue: selectedApp,
-                      title: const Text('Maps'),
-                      onChanged: (value) =>
-                          setState(() => selectedApp = value as int),
-                    ),
-                  ],
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancel'),
-                  ),
-                  TextButton(
-                    onPressed: () async {
-                      String url = '';
-                      switch (selectedApp) {
-                        case 0:
-                          url = getWazeUrl('address');
-                          break;
-                        case 1:
-                          // Check if Apple Maps or Google Maps is installed
-                          if (await isAppInstalled("comgooglemaps://")) {
-                            url = getGoogleMapsUrl('address');
-                          } else {
-                            url = getAppleMapsUrl('address');
-                          }
-                          break;
-                      }
-                      launch(url);
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Navigate'),
-                  ),
-                ],
-              ),
-            );
-          },
-          child: const Text('test'),
-        ),
+    return Center(
+      child: Column(
+        children: [
+          TextButton(
+            onPressed: () async {
+              await _launchUrl(app: 'waze');
+            },
+            child: const Text('waze'),
+          ),
+          TextButton(
+            onPressed: () async {
+              await _launchUrl(app: 'googleMaps');
+            },
+            child: const Text('gogole maps'),
+          ),
+          TextButton(
+            onPressed: () async {
+              await _launchUrl(app: 'appleMaps');
+            },
+            child: const Text('apple maps'),
+          ),
+        ],
       ),
     );
   }
